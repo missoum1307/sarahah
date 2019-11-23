@@ -37,7 +37,8 @@ const messageSchema = new Schema({ Message: String, ip: String, range: Array, co
 
 app.post('/message', ipMiddleware, async (req, res) => {
     const geo = geoip.lookup(req.userip)
-
+    const userAgent = req.header('User-Agent')
+    console.log(userAgent)
     sgMail.send({
         to: 'missoumozil@gmail.com',
         from: 'missoumxss@gmail.com',
