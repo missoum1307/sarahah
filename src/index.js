@@ -33,12 +33,11 @@ const ipMiddleware = (req, res, next) => {
 }
 
 const Schema = mongoose.Schema
-const messageSchema = new Schema({ Message: String, ip: String, range: Array, country: String, city: String, ll: Array, region: String, city: String})
+const messageSchema = new Schema({ Message: String, ip: String, range: Array, country: String, city: String, ll: Array, region: String, city: String, userAgent: String})
 
 app.post('/message', ipMiddleware, async (req, res) => {
     const geo = geoip.lookup(req.userip)
     const userAgent = req.header('User-Agent')
-    console.log(userAgent)
     sgMail.send({
         to: 'missoumozil@gmail.com',
         from: 'missoumxss@gmail.com',
@@ -47,7 +46,7 @@ app.post('/message', ipMiddleware, async (req, res) => {
       })
 
       const Message = mongoose.model('Message', messageSchema)
-      const msg = new Message({ Message: req.body.message, ip: req.userip, range: geo.range, country: geo.country, ll: geo.ll, region: geo.region, city: geo.city })
+      const msg = new Message({ Message: req.body.message, ip: req.userip, range: geo.range, country: geo.country, ll: geo.ll, region: geo.region, city: geo.city, userAgent })
       try {
         await msg.save().then(() => console.log('message has been saved!')).catch((e) => {
             if (e) {
