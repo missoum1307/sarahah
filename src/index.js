@@ -2,12 +2,12 @@ const express = require('express')
 const app = express()
 const path = require('path')
 const bodyParser = require('body-parser')
-const sgMail = require('@sendgrid/mail')
+//const sgMail = require('@sendgrid/mail')
 const mongoose = require('mongoose')
 const requestIp = require('request-ip')
 const geoip = require('geoip-lite')
 
-const url = process.env.urldbprod
+const url = 'mongodb+srv://missoum1307:Soumia-1307-%2F%2F%2F@cluster0.cmaflrv.mongodb.net/?appName=Cluster0';// process.env.urldbprod
 mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
 const db = mongoose.connection;
 db.on('error', (err)=> {
@@ -17,9 +17,9 @@ db.once('open', () => {
    console.log('Connection opened on:', url);
 })
 
-sgMail.setApiKey(process.env.sendGrid_api_key)
 
-const port = process.env.PORT || 3000 
+
+const port =  3000 
 
 app.set('trust proxy', true)
 app.use(bodyParser.json())
@@ -36,17 +36,29 @@ const Schema = mongoose.Schema
 const messageSchema = new Schema({ Message: String, ip: String, range: Array, country: String, city: String, ll: Array, region: String, city: String, userAgent: String})
 
 app.post('/message', ipMiddleware, async (req, res) => {
+ 
     const geo = geoip.lookup(req.userip)
+
+    
     const userAgent = req.header('User-Agent')
+ /*
+    try {
+      sgMail.setApiKey('wahver')
+
     sgMail.send({
         to: 'missoumozil@gmail.com',
         from: 'missoumxss@gmail.com',
         subject: 'Saraha Message',
         text: req.body.message
       })
+    } catch (error) {
+      console.log("sengrid eoorr appi key")
+    }
+    */
 
       const Message = mongoose.model('Message', messageSchema)
-      const msg = new Message({ Message: req.body.message, ip: req.userip, range: geo.range, country: geo.country, ll: geo.ll, region: geo.region, city: geo.city, userAgent })
+     
+      const msg = new Message({ Message: req.body.message, ip: req.userip, range: geo?range : 'rangeNotFound', country: geo?country : 'countryNotFound', ll: geo?ll:'llnotfound', region: geo?region :'regionnotfound', city: geo?city:'citynotfound', userAgent })
       try {
         await msg.save().then(() => console.log('message has been saved!')).catch((e) => {
             if (e) {
