@@ -37,8 +37,10 @@ const messageSchema = new Schema({ Message: String, ip: String, range: Array, co
 
 app.post('/message', ipMiddleware, async (req, res) => {
  
-    const geo = geoip.lookup(req.userip)
+    // const geo = geoip.lookup(req.userip)
 
+
+  
     
     const userAgent = req.header('User-Agent')
  /*
@@ -58,7 +60,8 @@ app.post('/message', ipMiddleware, async (req, res) => {
 
       const Message = mongoose.model('Message', messageSchema)
      
-      const msg = new Message({ Message: req.body.message, ip: req.userip, range: geo?range : 'rangeNotFound', country: geo?country : 'countryNotFound', ll: geo?ll:'llnotfound', region: geo?region :'regionnotfound', city: geo?city:'citynotfound', userAgent })
+
+      const msg = new Message({ Message: req.body.message, ip: req.userip, range: 'rangeNotFound', country:  'countryNotFound', ll: 'llnotfound', region:'regionnotfound', city:'citynotfound', userAgent })
       try {
         await msg.save().then(() => console.log('message has been saved!')).catch((e) => {
             if (e) {
